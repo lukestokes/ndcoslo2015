@@ -24,7 +24,7 @@ var root = '';
 var port = (process.env.PORT || 8181);
 var jsonType = 'application/json';
 var cjType = 'application/vnd.collection+json';
-var haljsonType = 'application/vnd.hal+json';
+var haljsonType = 'application/hal+json';
 var repjsonType = 'application/representor+json';
 var sirenType = 'application/vnd.siren+json';
 var htmlType = "text/html";
@@ -57,8 +57,8 @@ function handler(req, res) {
     csType = csAccept.split(',')[0];
   }
   // TK: this forces the request type
-  //csType = sirenType; 
-  
+  //csType = sirenType;
+
   // parse incoming request URL
   parts = [];
   segments = req.url.split('/');
@@ -67,7 +67,7 @@ function handler(req, res) {
       parts.push(segments[i]);
     }
   }
-  
+
   // handle options call
   if(req.method==="OPTIONS") {
     sendResponse(req, res, "", 200);
@@ -82,13 +82,13 @@ function handler(req, res) {
     }
   }
   catch(ex) {}
-  
+
   // home handler
   if(reHome.test(req.url)) {
     flg = true;
     doc = home(req, res, parts, handleResponse);
   }
-  
+
   // final error
   if(flg===false) {
     handleResponse(req, res, utils.errorResponse(req, res, 'Not Found', 404));
@@ -98,7 +98,7 @@ function handler(req, res) {
 // handle response work
 function handleResponse(req, res, doc) {
   var rtn;
-  
+
   if(doc!==null) {
     if(doc.file===true) {
       rtn = doc.doc;
@@ -114,7 +114,7 @@ function handleResponse(req, res, doc) {
 }
 function sendResponse(req, res, body, code, headers) {
   var hdrs;
-  
+
   if(headers && headers!==null) {
     hdrs = headers;
   }
@@ -124,7 +124,7 @@ function sendResponse(req, res, body, code, headers) {
   if(!hdrs['content-type']) {
     hdrs['content-type'] = csType;
   }
-  
+
   // always add CORS headers to support external clients
   hdrs["Access-Control-Allow-Origin"] = "*";
   hdrs["Access-Control-Allow-Methods"] = "POST, GET, PUT, DELETE, OPTIONS";

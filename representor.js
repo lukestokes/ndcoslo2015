@@ -37,7 +37,7 @@ function processDoc(object, mimeType, root) {
     case "application/vnd.collection+json":
       doc = cj(object, root);
       break;
-    case "application/vnd.hal+json":
+    case "application/hal+json":
       doc = haljson(object, root);
       break;
     case "application/vnd.siren+json":
@@ -46,8 +46,8 @@ function processDoc(object, mimeType, root) {
     case "application/representor+json":
       doc = repjson(object, root);
       break;
-      
-    // demo formats for NDC Oslo 2015  
+
+    // demo formats for NDC Oslo 2015
     case "application/json;profiles=urls":
       doc = jsonurls(object, root);
       break;

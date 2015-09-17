@@ -9,12 +9,12 @@
   - no support for:
   - _links.curies
   - relies on a customer halForms() implementation
-  
+
   - has fatal dependency on:
     - uritemplate.js
     - dom-help.js
   - uses no other external libs/frameworks
-  
+
   - built/tested for chrome browser (YMMV on other browsers)
   - designed to act as a "validator" for a human-driven HAL client.
   - not production robust (missing error-handling, perf-tweaking, etc.)
@@ -24,19 +24,19 @@
 function hal() {
 
   var forms = halForms();
-  var d = domHelp();  
+  var d = domHelp();
   var g = {};
-  
+
   g.url = '';
   g.hal = null;
-  g.ctype = "application/vnd.hal+json";
+  g.ctype = "application/hal+json";
   g.title = "";
-  
+
   // init library and start
   function init(url, title) {
 
     g.title = title||"HAL Client";
-    
+
     if(!url || url==='') {
       alert('*** ERROR:\n\nMUST pass starting URL to the HAL library');
     }
@@ -62,34 +62,34 @@ function hal() {
     var elm = d.find("title");
     elm.innerText = g.title;
   }
-  
+
   // handle response dump
   // just for debugging help
   function dump() {
     var elm = d.find("dump");
     elm.innerText = JSON.stringify(g.hal, null, 2);
   }
-    
+
   // _links
   // the real stuff starts here
   function links() {
     var elm, coll;
     var ul, li, a, sel, opt;
-    
+
     elm = d.find("links");
     d.clear(elm);
     if(g.hal._links) {
       coll = g.hal._links;
       ul = d.node("ul");
-      
+
       for(var link in coll) {
         // render link collections as HTML select
         if(Array.isArray(coll[link])===true) {
-          sel = d.node("select");          
+          sel = d.node("select");
           sel.onclick = halSelect;
           opt = d.option({text:"Select",value:""});
           d.push(opt,sel);
-          
+
           for(var ary in coll[link]) {
             opt = d.option({
               text:(coll[link][ary].title||coll[link][ary].href),
@@ -117,7 +117,7 @@ function hal() {
           // add custom attributes
           a.setAttribute("templated", coll[link].templated||"false");
           a = halAttributes(a,coll[link]);
-          
+
           li = d.node("li");
           li.onclick = halLink;
           d.push(a, li);
@@ -133,13 +133,13 @@ function hal() {
   function embedded() {
     var elm, embeds;
     var ul, li, dl, dt, dd;
-    
+
     elm = d.find("embedded");
     d.clear(elm);
-    
+
     if(g.hal._embedded) {
       ul = d.node("ul");
-      
+
       // get all the rel/sets for this response
       embeds = g.hal._embedded;
       for(var coll in embeds) {
@@ -147,12 +147,12 @@ function hal() {
         dl = d.node("dl");
         p = d.para({text:coll, className:"embedded group"});
         d.push(p,li);
-        
+
         // get all the links for this rel/set
         items = embeds[coll];
         for(var itm of items) {
           dt = d.node("dt");
-          
+
           // pluck href from the properties
           a = d.anchor({
             rel:coll,
@@ -165,7 +165,7 @@ function hal() {
           a.onclick = halLink;
           d.push(a,dt);
           d.push(dt, dl);
-          
+
           // emit all the properties for this item
           dd = d.node("dd");
           for(var prop in itm) {
@@ -175,42 +175,42 @@ function hal() {
             }
           }
           d.push(dd,dl);
-        }        
+        }
         d.push(dl, li);
       }
       d.push(li, ul);
     }
     if(ul) {d.push(ul, elm);}
   }
-  
+
   // properties
   // emit any root-level properties
   function properties() {
     var elm, coll;
     var dl, dt, dd;
-    
+
     elm = d.find("properties");
     d.clear(elm);
     dl = d.node("dl");
-    
+
     dd = d.node("dd");
     for(var prop in g.hal) {
-      if(prop!=="_links" && prop!=="_embedded") {      
+      if(prop!=="_links" && prop!=="_embedded") {
         p = d.data({className:"property "+prop,text:prop+"&nbsp;",value:g.hal[prop]+"&nbsp;"});
         d.push(p,dd);
       }
       d.push(dd,dl);
     }
     d.push(dl,elm);
-  }  
-  
+  }
+
   // show form for input
   // this is a custom experience
   // see the halForms() lib for inputs
   function halShowForm(f, href, title) {
     var elm, coll, val;
     var form, lg, fs, p, inp;
-     
+
     elm = d.find("form");
     d.clear(elm);
 
@@ -230,17 +230,17 @@ function hal() {
       val = prop.value;
       if(g.hal[prop.name]) {
         val = val.replace("{"+prop.name+"}",g.hal[prop.name]);
-      } 
+      }
       p = d.input({
         prompt:prop.prompt,
         name:prop.name,
-        value:val, 
+        value:val,
         required:prop.required,
         readOnly:prop.readOnly
       });
       d.push(p,fs);
     }
-    
+
     p = d.node("p");
     inp = d.node("input");
     inp.type = "submit";
@@ -252,11 +252,11 @@ function hal() {
     inp.onclick = function(){elm = d.find("form");d.clear(elm);}
     d.push(inp,p);
 
-    d.push(p,fs);            
+    d.push(p,fs);
     d.push(fs,form);
     d.push(form, elm);
-  }  
-  
+  }
+
   // ***************************
   // hal helpers
   // ***************************
@@ -264,17 +264,17 @@ function hal() {
   // handle hal-specific attributes
   function halAttributes(elm,link) {
     var coll;
-    
+
     coll = ["deprecation","type","name","profile","hreflang"]
-    
+
     for(var attr of coll) {
       if(link[attr] && link[attr]!=="") {
         elm.setAttribute(attr,link[attr]);
       }
     }
-    return elm;  
+    return elm;
   }
-  
+
   // clear out the page
   function halClear() {
     var elm;
@@ -295,7 +295,7 @@ function hal() {
 
     elm = e.target;
     href = elm.options[elm.selectedIndex].value;
-    accept = elm.options[elm.selectedIndex].getAttribute("type"); 
+    accept = elm.options[elm.selectedIndex].getAttribute("type");
     if(href && href!=="") {
       req(href, "get", null, null, accept||g.ctype);
     }
@@ -307,7 +307,7 @@ function hal() {
     var elm, form, href, accept;
 
     elm = e.target;
-    accept = elm.getAttribute("type"); 
+    accept = elm.getAttribute("type");
 
     form = forms.lookUp(elm.rel);
     if(form && form!==null) {
@@ -316,21 +316,21 @@ function hal() {
     else {
       req(elm.href, "get", null, null, accept||g.ctype);
     }
-    return false;    
+    return false;
   }
 
   // handle parameterized requests
   // all forms submits are processed here
   function halSubmit(e) {
     var form, query, nodes, i, x, args, url, method, template, accept;
-    
+
     args = {};
     form = e.target;
     query = form.action.replace(/%7B/,'{'); // hack
     template = UriTemplate.parse(query);
     method = form.getAttribute("halmethod")||form.method;
     accept = form.getAttribute("type")||g.ctype;
-    
+
     // gather inputs
     nodes = d.tags("input", form);
     for(i=0, x=nodes.length;i<x;i++) {
@@ -342,7 +342,7 @@ function hal() {
     // resolve any URITemplates
     url = template.expand(args);
 
-    // force app/json for bodies    
+    // force app/json for bodies
     if(method!=="get" && method!=="delete") {
       req(url, method, JSON.stringify(args), "application/json", accept);
     }
@@ -351,11 +351,11 @@ function hal() {
     }
     return false;
   }
-  
+
   // ********************************
   // ajax helpers
-  // ********************************  
-  
+  // ********************************
+
   // low-level HTTP stuff
   function req(url, method, body, content, accept) {
     var ajax = new XMLHttpRequest();
@@ -367,7 +367,7 @@ function hal() {
     }
     ajax.send(body);
   }
-  
+
   function rsp(ajax) {
     if(ajax.readyState===4) {
       g.hal = JSON.parse(ajax.responseText);
@@ -383,7 +383,7 @@ function hal() {
 
 /***************************
  FORMS for HAL-JSON
- 
+
  This is a custom implementation to support human input forms for HAL
  - define a form (rel, method, arguments)
  - set rel == hal._link.rel
@@ -391,9 +391,9 @@ function hal() {
  - display form (see halShowForm) and handle submission
 
  NOTE:
- optionally, halForms.lookup(rel) could call an external service 
+ optionally, halForms.lookup(rel) could call an external service
  using the rel as a URL that returns the JSON definition
- 
+
  **************************/
 function halForms() {
 
@@ -408,7 +408,7 @@ function halForms() {
       }
     }
     return rtn;
-  }  
+  }
 
   // load forms once
   var forms = [];
@@ -454,7 +454,7 @@ function halForms() {
       {name:"completed",value:"true", prompt:"Completed",readOnly:true}
     ]
   });
-    
+
   var that = {};
   that.lookUp = lookUp;
 
